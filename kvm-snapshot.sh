@@ -7,19 +7,16 @@
 # Released under the WTFPL (http://www.wtfpl.net/)
 # See WTFPL.txt for the full license legalese
 #
-#TODO: Logging, encryption option, list dependencies
+#TODO: Logging, list dependencies, encryption option
 
 # If set to 1 compression (bzip2) enabled
 ENABLE_COMPRESSION="1"
-
-# Space separated list of VMs that you DO NOT want to be backed up.
-EXCLUDED_VMS="test-1"
-
-# Location backups will be stored. This should be an NFS vol, or iSCSI target or something remote.
-BACKUP_DIR="/backups"
-
 # Retention (in days) of backups to keep
 VM_RETENTION="5"
+# Space separated list of VMs that you DO NOT want to be backed up.
+EXCLUDED_VMS="test-1"
+# Location backups will be stored. This should be an NFS vol, or iSCSI target or something remote.
+BACKUP_DIR="/path/to/backups"
 
 DATE=`date +%F`
 BZIP=/usr/bin/lbzip2
@@ -52,7 +49,7 @@ do
 	virsh dumpxml $BACKUP_VM-clone > $BACKUP_DIR/$BACKUP_VM/$DATE/$BACKUP_VM.xml
 	virsh undefine $BACKUP_VM-clone
 	virsh resume $BACKUP_VM
-	if [ "$COMPRESSION" -eq "1" ]
+	if [ "$ENABLE_COMPRESSION" -eq "1" ]; then
 		echo "Compressing $BACKUP_VM backup"
 		tar -cf $BACKUP_DIR/$BACKUP_VM/$DATE.tar $BACKUP_DIR/$BACKUP_VM/$DATE
 		$BZIP $BACKUP_DIR/$BACKUP_VM/$DATE.tar
